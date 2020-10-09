@@ -68,6 +68,20 @@ public class SnowFlakeIdGenerator {
 
     }
 
+    public static void main(String[] args) {
+        final SnowFlakeIdGenerator idGenerator = new SnowFlakeIdGenerator(31, 31);
+        // 线程池并行执行10000次ID生成
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        for (int i = 0; i < 10000; i++) {
+            executorService.execute(new Runnable() {
+                public void run() {
+                    long id = idGenerator.nextId();
+                    System.out.println(id);
+                }
+            });
+        }
+        executorService.shutdown();
+    }
 
     /**
      * 获得下一个ID (用同步锁保证线程安全)
@@ -112,21 +126,5 @@ public class SnowFlakeIdGenerator {
             timestamp = System.currentTimeMillis();
         }
         return timestamp;
-    }
-
-
-    public static void main(String[] args) {
-        final SnowFlakeIdGenerator idGenerator = new SnowFlakeIdGenerator(31, 31);
-        // 线程池并行执行10000次ID生成
-        ExecutorService executorService = Executors.newCachedThreadPool();
-        for (int i = 0; i < 10000; i++) {
-            executorService.execute(new Runnable() {
-                public void run() {
-                    long id = idGenerator.nextId();
-                    System.out.println(id);
-                }
-            });
-        }
-        executorService.shutdown();
     }
 }
